@@ -59,10 +59,10 @@ async def ask(request: AskRequest):
     except Exception as error:
         if "429" in str(error):
             raise HTTPException(status_code=429, detail="Daily AI limit reached. Please try again later.")
-        if "503" in str(error) or "timed out" in str(error).lower():
+                if "503" in str(error) or "timed out" in str(error).lower():
             raise HTTPException(status_code=503, detail="The AI service is busy right now. Please try again in a few minutes.")
-        print("Error:", error)
-        raise HTTPException(status_code=500, detail="Something went wrong. Please try again.")
+                print("Agent error:", error)
+        if "503" in str(error) or "timed out" in str(error).lower():
 
     chart = find_chart(result)
     return AskResponse(
