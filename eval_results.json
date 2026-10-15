@@ -1,0 +1,39 @@
+{
+  "run_at": "2026-10-15T04:29:27",
+  "score": "3/4",
+  "results": [
+    {
+      "question": "Which city had the highest sales?",
+      "expected": [
+        "Islamabad",
+        "1655000"
+      ],
+      "passed": true,
+      "agent_answer": "RESULT:\ncity | total_sales\nIslamabad | 1655000\n\nSQL:\nSELECT city, SUM(total_amount) AS total_sales FROM orders WHERE status = 'delivered' GROUP BY city ORDER BY total_sales DESC LIMIT 1;"
+    },
+    {
+      "question": "Which product was returned the most times?",
+      "expected": [
+        "Handbag"
+      ],
+      "passed": false,
+      "agent_answer": "ERROR: Error code: 503 - [{'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}]"
+    },
+    {
+      "question": "What were the total delivered sales in March 2026?",
+      "expected": [
+        "664600"
+      ],
+      "passed": true,
+      "agent_answer": "RESULT:\ntotal_delivered_sales\n664600\n\nSQL:\nSELECT SUM(total_amount) AS total_delivered_sales FROM orders WHERE status = 'delivered' AND strftime('%Y-%m', order_date) = '2026-03';"
+    },
+    {
+      "question": "Which sales channel had the most delivered orders?",
+      "expected": [
+        "Website"
+      ],
+      "passed": true,
+      "agent_answer": "RESULT:\nchannel | order_count\nWebsite | 169\nStore | 157\nWhatsApp | 150\n\nSQL:\nSELECT channel, COUNT(*) AS order_count FROM orders WHERE status = 'delivered' GROUP BY channel ORDER BY order_count DESC"
+    }
+  ]
+}
