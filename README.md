@@ -4,7 +4,7 @@ A sales analyst you can talk to. A shop manager asks a question in plain English
 
 I built this because most small business owners I know have their numbers sitting in a database or spreadsheet but cannot query it themselves. They wait for someone to make a report. This removes the wait for the common questions.
 
-Live demo: _add your Render link here_
+Live demo: https://data-analyst-agent-g6uh.onrender.com/
 
 ## What it does
 
@@ -84,4 +84,66 @@ Copy `.env.example` to `.env` and add your Gemini API key. Then:
 ```bash
 uv run create_data.py               # build the demo database
 uv run test_tools.py                # check tools and safety (no API calls)
-uv run ping_gemini.py               # check the
+uv run ping_gemini.py               # check the key and model
+uv run main.py                      # chat in the terminal
+uv run uvicorn api:app --reload     # web app at http://127.0.0.1:8000
+````
+
+## Example
+
+````
+You: Which city had the highest sales?
+
+Analyst: Islamabad had the highest delivered sales at Rs 1,655,000.
+- Multan is second with Rs 1,511,400.
+- Faisalabad is lowest at Rs 1,151,500, about 30% below Islamabad.
+Suggestion: Look at what is selling in Islamabad and test the same promotion in Faisalabad.
+
+You: Can you help me with my physics homework?
+Analyst: I can only answer questions about the shop's sales data.
+````
+
+## Problems I ran into
+
+**Free tier limits.** The Gemini free tier allows 20 requests per day per model, and one question uses several of them. I wrote the tool tests so they run without the model and kept agent tests to one or two questions at a time. The limit is per model, so I can switch models through `.env` when one runs out.
+
+**An overloaded model.** For two days the model I started with returned 503 errors or timed out. I wrote a one-request ping script to tell apart "my code is broken", "my internet is down" and "the model is busy", then moved the model name into `.env` so switching takes one line. I also set a timeout and a small retry count so users get a clear message in about 30 seconds instead of waiting minutes.
+
+**A stale environment variable.** After changing the model in `.env`, the app kept using the old one. The editor had loaded `.env` into the terminal when it opened, and `load_dotenv()` does not override existing variables. `load_dotenv(override=True)` fixed it.
+
+**SQLite dates.** The model kept writing MySQL date functions like `MONTH(order_date)`, which do not exist in SQLite. One line in the instructions, telling it to use `strftime('%Y-%m', order_date)`, fixed it.
+
+**Finding the chart in the response.** The model sometimes mentioned the chart's file path in its answer and sometimes did not. Instead of parsing the text, the chart tool returns `CHART_FILE: <path>`, and the API looks for that in the tool outputs.
+
+## Limitations and what I would add next
+
+- The data is a generated demo set. Connecting a real Postgres or MySQL database would mostly mean changing `get_connection()`.
+- On the free hosting plan, charts and conversation memory are lost when the server restarts.
+- The SQL keyword check is a blocklist. For production I would also use a database user that only has SELECT permission.
+- There are no automated evaluations yet. Next I want a set of 20 questions with known answers and a script that checks the agent's numbers against them.
+- Add CSV upload so a manager can analyse their own file.
+
+## Author
+
+Komal Mustafa
+````
+
+**3.** Fix **lines 77–78** to your real repo name:
+````
+git clone https://github.com/Komal-Mustafa/Data_Analyst_agent.git
+cd Data_Analyst_agent
+````
+
+**4.** Save with **Ctrl+S**.
+
+## Step C: push it
+Make sure the terminal shows `PS D:\data_analyst_agent>`, then:
+````
+git add README.md
+git commit -m "Complete README"
+git push
+````
+
+✅ **Success looks like:** `main -> main` at the end, **not** "nothing to commit".
+
+Send me a screenshot of the terminal after Step C. 🙂              # check the
