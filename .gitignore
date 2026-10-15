@@ -1,0 +1,20 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Secrets (NEVER upload)
+.env
+
+# Generated files
+*.db
+charts/
+
+# Editor settings
+.vscode/
